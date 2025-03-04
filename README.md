@@ -59,7 +59,10 @@ sudo systemctl enable --now suricata
 ```
 
 ## Configuración de Suricata
-Las **reglas** son el **corazón** del funcionamiento de Suricata. Son expresiones que definen qué tráfico es sospechoso o malicioso.
+* 🎯 Las reglas son el núcleo de Suricata, definiendo qué tráfico vigilar o bloquear.
+* 🛠 Puedes crear y gestionar tus propias reglas en local.rules.
+* 🚀 Con suricata-update puedes mantener actualizadas las reglas comunitarias.
+* 🧩 La gestión eficiente en suricata.yaml es clave para un IDS/IPS organizado.
 
 Suricata usa archivos de reglas (`.rules`) para definir el comportamiento del IDS/IPS.
 
@@ -72,4 +75,23 @@ Principales ubicaciones:
 |-----------------|------------------------------------------------|
 | `suricata.rules`| Archivo combinado con todas las reglas activas.|
 | `local.rules`   | Archivo recomendado para reglas personalizadas.|
+
+
+### Configuración de las reglas
+En `suricata.yaml`, se especifican los archivos `.rules` que Suricata cargará:
+```yaml
+rule-files:
+  - suricata.rules
+  - local.rules
+  - emerging-threats.rules
+```
+Ejemplo de regla básica en suricata:
+```
+alert tcp any any -> any 80 (msg:"Tráfico HTTP detectado"; sid:100002; rev:1;)
+```
+
+
+
+
+
 
