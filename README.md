@@ -76,22 +76,77 @@ Principales ubicaciones:
 | `suricata.rules`| Archivo combinado con todas las reglas activas.|
 | `local.rules`   | Archivo recomendado para reglas personalizadas.|
 
+### Configuración con suricata.yaml
+Localiza las siguientes secciones en el archivo `/etc/suricata/suricata.yaml`
+```yaml
+# Configuración de la interfaz de red
+af-packet:
+  - interface: eth0
+
+# Configuración de logs
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: json
+      filename: /var/log/suricata/eve.json
+
+# Archivos de reglas
+default-rule-path: /etc/suricata/rules
+rule-files:
+  - suricata.rules
+  - local.rules
+
+```
+Para aplicar cambios ejecuta: `sudo systemctl restart suricata`
+<br>
+O si prefieres probar directamente sin tocar el servicio, puedes lanzar Suricata en modo prueba:
+```
+sudo suricata -c /etc/suricata/suricata.yaml -i eth0
+```
+
+---
 
 ### Configuración de las reglas
-En `suricata.yaml`, se especifican los archivos `.rules` que Suricata cargará:
+Dentro del archivo `suricata.yaml`, indicamos los archivos `.rules` que Suricata cargará:
 ```yaml
 rule-files:
   - suricata.rules
   - local.rules
   - emerging-threats.rules
 ```
-Ejemplo de regla básica en suricata:
+
+### Orden de los archivos de reglas
+Cuando Suricata carga las reglas, las procesa en el orden en que aparecen en la lista. Esto afecta principalmente a dos aspectos importantes:
+   1. Orden de evaluación de reglas: Suricata analiza los paquetes siguiendo el orden de los archivos.
+   2. Sobrescritura de reglas: si tienes reglas duplicadas (la misma firma o ID de regla) en diferentes archivos, la última regla cargada sobrescribirá las anteriores.
+
+📘 Estrategia recomendada:
+   * Reglas oficiales o predefinidas primero: como las de Emerging Threats o las reglas base de Suricata.
+   * Reglas personalizadas al final: para que puedas ajustar o sobrescribir reglas sin modificar los archivos originales (esto evita problemas al actualizar).
+
+Un ejemplo de orden ótpimo sería:
+```yaml
+rule-files:
+  - emerging-threats.rules      # Reglas comunitarias actualizadas
+  - suricata.rules              # Reglas base o estándar
+  - local.rules                 # Reglas personalizadas o ajustes locales
+```
+
+---
+
+### Agregar una regla personalizada
+Para agregar una regla personalizada debemos editar el archivo de reglas `local.rules`.
+
+Editar el archivo de reglas:
+```
+sudo nano /etc/suricata/rules/local.rules
+```
+Agrega la siguiente regla:
 ```
 alert tcp any any -> any 80 (msg:"Tráfico HTTP detectado"; sid:100002; rev:1;)
 ```
-
-
-
-
-
-
+Para aplicar la nueva regla tenemos dos opciones:
+```
+sudo systemctl restart suricata   // Reinicia completamente Suricata (detiene y vuelve a iniciar).
+pkill -HUP suricata               // Recarga reglas y configuración sin interrumpir la captura de tráfico.
+```
