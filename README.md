@@ -145,8 +145,9 @@ Agrega la siguiente regla:
 ```
 alert tcp any any -> any 80 (msg:"Tráfico HTTP detectado"; sid:100002; rev:1;)
 ```
-Para aplicar la nueva regla tenemos dos opciones:
+Para aplicar la nueva regla tenemos 2 opciones:
 ```
 sudo systemctl restart suricata   // Reinicia completamente Suricata (detiene y vuelve a iniciar).
 pkill -HUP suricata               // Recarga reglas y configuración sin interrumpir la captura de tráfico.
 ```
+
