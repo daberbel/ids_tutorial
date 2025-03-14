@@ -1,1 +1,6 @@
-
+## Conectar Suricata con Elasticsearch y Kibana para ver alertas en tiempo real
+Necesitaremos tener instaladas las siguientes herramientas:
+* Suricata: Detecta y genera alertas.
+* Filebeat (módulo Suricata): Recoge los logs y los envía a Elasticsearch.
+* Elasticsearch: Almacena y permite buscar los logs de Suricata.
+* Kibana: Visualiza los datos con gráficos y paneles.
